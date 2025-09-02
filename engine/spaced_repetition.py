@@ -1,18 +1,13 @@
-def sm2(easiness, interval, repetitions, quality):
-    if quality >= 3:
-        if repetitions == 0:
-            interval = 1
-        elif repetitions == 1:
-            interval = 6
-        else:
-            interval *= easiness
-        repetitions += 1
-        easiness = max(1.3, easiness + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)))
-    else:
-        repetitions = 0
-        interval = 1
-    return int(interval), repetitions, round(easiness, 2)
+import datetime
 
-interval, reps, ease = sm2(2.5, 6, 2, 4)  # 4 = answered correctly
-print("Next review in", interval, "days")
+class SpacedRepetition:
+    def __init__(self):
+        self.schedule = {}
+
+    def review_time(self, topic, level=1):
+        """Set next review time based on success level"""
+        days = {1: 1, 2: 3, 3: 7, 4: 14}
+        next_time = datetime.datetime.now() + datetime.timedelta(days=days.get(level, 1))
+        self.schedule[topic] = str(next_time)
+        return self.schedule
 

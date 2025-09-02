@@ -1,17 +1,15 @@
-from tinydb import TinyDB, Query
-from datetime import datetime
+import json
+from pathlib import Path
 
-db = TinyDB("data/user_db.json")
-User = Query()
+class ProgressTracker:
+    def __init__(self, user_file="../data/user_db.json"):
+        self.user_file = Path(user_file)
+        if not self.user_file.exists():
+            self.user_file.write_text(json.dumps({"users": {}}))
+        self.data = json.loads(self.user_file.read_text())
 
-def log_score(username, topic, score):
-    db.insert({
-        "user": username,
-        "topic": topic,
-        "score": score,
-        "date": datetime.now().isoformat()
-    })
-
-def get_scores(username):
-    return db.search(User.user == username)
+    def update(self, username, topic, status):
+        user = self.data["users"].setdefault(username, {})
+        user[topic] = status
+        self.user_file.write_text(json.dumps(self.data, indent=2))
 

@@ -1,14 +1,11 @@
-from transformers import T5Tokenizer, T5ForConditionalGeneration
+from transformers import pipeline
 
-tokenizer = T5Tokenizer.from_pretrained('t5-small')
-model = T5ForConditionalGeneration.from_pretrained('t5-small')
+class QuestionGenerator:
+    def __init__(self, model_name="facebook/bart-large-cnn"):
+        self.generator = pipeline("text2text-generation", model=model_name)
 
-def generate_t5_question(context):
-    input_text = f"generate question: {context}"
-    input_ids = tokenizer.encode(input_text, return_tensors="pt")
-    outputs = model.generate(input_ids, max_length=64)
-    return tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-print(generate_template_question("photosynthesis"))
-print(generate_t5_question("Photosynthesis is the process by which plants convert light energy..."))
+    def generate_question(self, context):
+        prompt = f"Generate a quiz question from this text:\n{context}"
+        result = self.generator(prompt, max_length=50, num_return_sequences=1)
+        return result[0]['generated_text']
 

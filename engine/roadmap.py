@@ -1,21 +1,16 @@
-import math
 import json
+from pathlib import Path
 
-def load_syllabus(subject):
-    with open("data/syllabus.json") as f:
-        data = json.load(f)
-    return data.get(subject.lower(), [])
+class RoadmapEngine:
+    def __init__(self, syllabus_file="../data/syllabus.json"):
+        self.syllabus = json.loads(Path(syllabus_file).read_text())
 
-def create_study_plan(subject, days):
-    topics = load_syllabus(subject)
-    if not topics:
-        return []
-
-    per_day = math.ceil(len(topics) / days)
-    plan = [topics[i:i + per_day] for i in range(0, len(topics), per_day)]
-    return plan
-
-plan = create_study_plan("neet_biology", 5)
-for i, day in enumerate(plan):
-    print(f"Day {i+1}: {day}")
+    def generate(self, subject):
+        if subject not in self.syllabus:
+            return []
+        roadmap = []
+        for unit, topics in self.syllabus[subject].items():
+            for topic in topics:
+                roadmap.append({"unit": unit, "topic": topic, "status": "pending"})
+        return roadmap
 

@@ -1,12 +1,12 @@
 {
-  "neet_biology": [
-    "Cell Structure",
-    "Genetics",
-    "Photosynthesis",
-    "Respiration",
-    "Human Physiology",
-    "Plant Physiology",
-    "Ecology"
-  ]
+  "Mathematics": {
+    "Algebra": ["Linear Equations", "Quadratic Equations"],
+    "Calculus": ["Derivatives", "Integrals"]
+  },
+  "Physics": {
+    "Mechanics": ["Newton's Laws", "Work and Energy"],
+    "Electricity": ["Ohm's Law", "Circuits"]
+  }
 }
+
 

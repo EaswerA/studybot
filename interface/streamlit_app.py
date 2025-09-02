@@ -1,30 +1,40 @@
 import streamlit as st
-from engine.roadmap import create_study_plan
-from models.question_generator import generate_template_question, generate_t5_question
-from engine.tracker import log_score, get_scores
+from engine.roadmap import RoadmapEngine
+from engine.tracker import ProgressTracker
+from engine.spaced_repetition import SpacedRepetition
+from models.question_generator import QuestionGenerator
 
-st.title("StudyBot - NLP Learning Assistant")
+st.set_page_config(page_title="StudyBot", page_icon="📘", layout="centered")
 
-name = st.text_input("Your name")
-subject = st.text_input("Subject (e.g., neet_biology)")
-days = st.number_input("Days left to study", min_value=1, step=1)
+roadmap_engine = RoadmapEngine()
+tracker = ProgressTracker()
+spaced = SpacedRepetition()
+qgen = QuestionGenerator()
 
-if st.button("Create Plan"):
-    plan = create_study_plan(subject, days)
-    for i, topics in enumerate(plan):
-        st.write(f"**Day {i+1}**: {', '.join(topics)}")
+st.title("📘 StudyBot - Your Exam Assistant")
 
-if st.button("Start Quiz"):
-    concept = st.text_input("Enter a concept to quiz on (e.g., photosynthesis)")
-    if st.checkbox("Use T5 model?"):
-        question = generate_t5_question(f"{concept} is ...")  # write a mini para
-    else:
-        question = generate_template_question(concept)
+username = st.text_input("Enter your name:")
 
-    st.write("Question:", question)
-    answer = st.text_input("Your Answer")
-    if st.button("Submit Answer"):
-        score = st.slider("How well did you recall? (0-5)", 0, 5)
-        log_score(name, concept, score)
-        st.success("Score logged!")
+subject = st.selectbox("Choose a subject:", ["Mathematics", "Physics"])
+
+if st.button("Generate Roadmap"):
+    roadmap = roadmap_engine.generate(subject)
+    for r in roadmap:
+        st.write(f"- {r['unit']} → {r['topic']} [{r['status']}]")
+
+topic = st.text_input("Enter topic to practice:")
+if st.button("Get Quiz Question"):
+    if topic:
+        question = qgen.generate_question(f"Explain the topic: {topic}")
+        st.write("**Generated Question:**", question)
+
+if st.button("Mark as Completed"):
+    if topic and username:
+        tracker.update(username, topic, "completed")
+        st.success(f"{topic} marked as completed!")
+
+if st.button("Set Review Schedule"):
+    if topic:
+        schedule = spaced.review_time(topic, level=2)
+        st.json(schedule)
 
