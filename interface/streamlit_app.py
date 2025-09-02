@@ -1,8 +1,10 @@
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import streamlit as st
-from ..engine.roadmap import RoadmapEngine
-from ..engine.spaced_repetition import SpacedRepetitionEngine
-from ..engine.tracker import ProgressTracker
-from ..models.question_generator import QuestionGenerator
+from engine.roadmap import RoadmapEngine
+from engine.spaced_repetition import SpacedRepetitionEngine
+from engine.tracker import ProgressTracker
+from models.question_generator import QuestionGenerator
 
 st.set_page_config(page_title="StudyBot", page_icon="📘", layout="centered")
 
